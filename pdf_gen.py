@@ -30,8 +30,8 @@ def pdf_gen():
         date = time.strftime("%b %d, %Y")
 
         #Add header background according to business
-        image_path = base_dir / f"images/{id}.jpg"
-        pdf.image(str(image_path),x=0, y=0, w=210)
+        iimage_url = (f"https://raw.githubusercontent.com/santoiio/invoice-generator-app/main/images/{id}.jpg")        
+        pdf.image(str(image_url),x=0, y=0, w=210)
 
         # Add invoice number headers
         pdf.set_y(40)
@@ -176,7 +176,7 @@ def pdf_gen():
         pdf.set_font(family="Helvetica", size=14)
         pdf.cell(w=15, h=8, txt="830-309-1564", ln=1)
         pdf.set_font(family="Helvetica", size=10, style="B")
-        pdf.image(name=f"images/{id}_tky.jpg", x=x + 90, y=y, w=60)
+        pdf.image(name=f"https://raw.githubusercontent.com/santoiio/invoice-generator-app/main/images/{id}_tky.jpg", x=x + 90, y=y, w=60)
         pdf.ln(12)
 
         pdf.set_text_color(0, 0, 0)
