@@ -30,7 +30,7 @@ def pdf_gen():
         date = time.strftime("%b %d, %Y")
 
         #Add header background according to business
-        iimage_url = (f"https://raw.githubusercontent.com/santoiio/invoice-generator-app/main/images/{id}.jpg")        
+        image_url = (f"https://raw.githubusercontent.com/santoiio/invoice-generator-app/main/images/{id}.jpg")        
         pdf.image(str(image_url),x=0, y=0, w=210)
 
         # Add invoice number headers
