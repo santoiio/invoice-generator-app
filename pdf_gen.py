@@ -193,7 +193,7 @@ def pdf_gen():
         pdf.set_font(family="Helvetica", size=10, style="B")
 
         image_url = (f"https://raw.githubusercontent.com/santoiio/invoice"
-                     f"-generator-app/main/images/{id.lower()}.jpg")
+                     f"-generator-app/main/images/{id.lower()}_tky.jpg")
         thanks_image = "thanks.jpg"
 
         # Download image and handle errors
@@ -202,7 +202,7 @@ def pdf_gen():
         if response.status_code == 200:
             with open(thanks_image, "wb") as file:
                 file.write(response.content)
-
+            print(f"Image {header_image} downloaded successfully.")
             # Ensure the file was written before using it
             if Path(thanks_image).exists():
                 pdf.image(thanks_image, x=x + 90, y=y, w=60)
