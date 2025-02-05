@@ -4,6 +4,7 @@ from fpdf import FPDF
 from pathlib import Path
 import time
 from send_email import send_email
+import streamlit as st
 
 def pdf_gen():
     filepaths = glob.glob("invoices/invoice_data.csv")
@@ -199,5 +200,5 @@ Thank you for your business!
     Maximiliano Santoyo
     """
     subject = f"{phrase} Invoice #{invoice_nr} - Payment Details Attached"
-    receivers = [info[4], "msant1994@gmail.com"]
+    receivers = [info[4], st.secrets["u_name1"]]
     send_email(subject, receivers, message, attachment_path)
