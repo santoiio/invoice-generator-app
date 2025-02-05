@@ -1,14 +1,14 @@
-import glob, requests, tempfile, time
+import glob, tempfile, time
 from fpdf import FPDF
 import pandas as pd
 from pathlib import Path
 import streamlit as st
 from send_email import send_email
+from get_image import header_image, thanks_image
 
 
 def pdf_gen():
     filepaths = glob.glob("invoices/invoice_data.csv")
-    base_dir = Path(__file__).parent
 
     for filepath in filepaths:
 
@@ -28,25 +28,8 @@ def pdf_gen():
         invoice_nr = filename
         date = time.strftime("%b %d, %Y")
 
-        #Add header background according to business
-        image_url = (
-            f"https://raw.githubusercontent.com/santoiio/invoice-generator"
-            f"-app/main/images/{id.lower()}.jpg")
-        header_image = "header.jpg"
-        response = requests.get(image_url)
-
-        if response.status_code == 200:
-            with open(header_image, "wb") as file:
-                file.write(response.content)
-            print(f"Image {header_image} downloaded successfully.")
-            # Ensure the file was written before using it
-            if Path(header_image).exists():
-                pdf.image(header_image, x=0, y=0, w=210)
-            else:
-                print("Error: Image file not found after download.")
-        else:
-            print(
-                f"Error: Failed to download image. Status code {response.status_code}")
+        # Add header background according to business
+        header_image(pdf, id)
 
         # Add invoice number headers
         pdf.set_y(40)
@@ -192,27 +175,11 @@ def pdf_gen():
         pdf.cell(w=15, h=8, txt="830-309-1564", ln=1)
         pdf.set_font(family="Helvetica", size=10, style="B")
 
-        image_url = (f"https://raw.githubusercontent.com/santoiio/invoice"
-                     f"-generator-app/main/images/{id.lower()}_tky.jpg")
-        thanks_image = "thanks.jpg"
-
-        # Download image and handle errors
-        response = requests.get(image_url)
-
-        if response.status_code == 200:
-            with open(thanks_image, "wb") as file:
-                file.write(response.content)
-            print(f"Image {header_image} downloaded successfully.")
-            # Ensure the file was written before using it
-            if Path(thanks_image).exists():
-                pdf.image(thanks_image, x=x + 90, y=y, w=60)
-            else:
-                print("Error: Image file not found after download.")
-        else:
-            print(
-                f"Error: Failed to download image. Status code {response.status_code}")
+        # Add thank you according to business
+        thanks_image(pdf, id, x, y)
         pdf.ln(12)
 
+        # Add warranty information
         pdf.set_text_color(0, 0, 0)
         if id == "CL":
             pdf.multi_cell(w=95, h=6, txt=r"Contractor warranty includes unglued "
