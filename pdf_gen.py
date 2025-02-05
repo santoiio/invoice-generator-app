@@ -1,5 +1,6 @@
 import pandas as pd
 import glob
+import requests
 from fpdf import FPDF
 from pathlib import Path
 import time
@@ -9,7 +10,6 @@ import streamlit as st
 
 def pdf_gen():
     filepaths = glob.glob("invoices/invoice_data.csv")
-    base_dir = Path(__file__).parent
 
     for filepath in filepaths:
 
@@ -30,8 +30,24 @@ def pdf_gen():
         date = time.strftime("%b %d, %Y")
 
         #Add header background according to business
-        image_url = (f"https://raw.githubusercontent.com/santoiio/invoice-generator-app/main/images/{id}.jpg")        
-        pdf.image(str(image_url),x=0, y=0, w=210)
+        image_url = f"https://raw.githubusercontent.com/santoiio/invoice-generator-app/main/images/{id}.jpg"
+        header_image = "header.jpg"
+
+        # Download image and handle errors
+        response = requests.get(image_url)
+
+        if response.status_code == 200:
+            with open(header_image, "wb") as file:
+                file.write(response.content)
+
+            # Ensure the file was written before using it
+            if Path(header_image).exists():
+                pdf.image(header_image, x=0, y=0, w=210)
+            else:
+                print("Error: Image file not found after download.")
+        else:
+            print(
+                f"Error: Failed to download image. Status code {response.status_code}")
 
         # Add invoice number headers
         pdf.set_y(40)
@@ -176,7 +192,25 @@ def pdf_gen():
         pdf.set_font(family="Helvetica", size=14)
         pdf.cell(w=15, h=8, txt="830-309-1564", ln=1)
         pdf.set_font(family="Helvetica", size=10, style="B")
-        pdf.image(name=f"https://raw.githubusercontent.com/santoiio/invoice-generator-app/main/images/{id}_tky.jpg", x=x + 90, y=y, w=60)
+
+        image_url = f"https://raw.githubusercontent.com/santoiio/invoice-generator-app/main/images/{id}.jpg"
+        thanks_image = "thanks.jpg"
+
+        # Download image and handle errors
+        response = requests.get(image_url)
+
+        if response.status_code == 200:
+            with open(thanks_image, "wb") as file:
+                file.write(response.content)
+
+            # Ensure the file was written before using it
+            if Path(thanks_image).exists():
+                pdf.image(thanks_image, x=x + 90, y=y, w=60)
+            else:
+                print("Error: Image file not found after download.")
+        else:
+            print(
+                f"Error: Failed to download image. Status code {response.status_code}")
         pdf.ln(12)
 
         pdf.set_text_color(0, 0, 0)
