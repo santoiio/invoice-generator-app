@@ -1,12 +1,9 @@
-import pandas as pd
-import tempfile
-import requests
-import glob
+import glob, requests, tempfile, time
 from fpdf import FPDF
+import pandas as pd
 from pathlib import Path
-import time
-from send_email import send_email
 import streamlit as st
+from send_email import send_email
 
 
 def pdf_gen():
@@ -33,14 +30,15 @@ def pdf_gen():
 
         #Add header background according to business
         image_url = (
-            f"https://raw.githubusercontent.com/santoiio/invoice-generator-app/main/images/{id}.jpg")
+            f"https://raw.githubusercontent.com/santoiio/invoice-generator"
+            f"-app/main/images/{id.lower()}.jpg")
         header_image = "header.jpg"
         response = requests.get(image_url)
 
         if response.status_code == 200:
             with open(header_image, "wb") as file:
                 file.write(response.content)
-
+            print(f"Image {header_image} downloaded successfully.")
             # Ensure the file was written before using it
             if Path(header_image).exists():
                 pdf.image(header_image, x=0, y=0, w=210)
@@ -194,7 +192,8 @@ def pdf_gen():
         pdf.cell(w=15, h=8, txt="830-309-1564", ln=1)
         pdf.set_font(family="Helvetica", size=10, style="B")
 
-        image_url = f"https://raw.githubusercontent.com/santoiio/invoice-generator-app/main/images/{id}.jpg"
+        image_url = (f"https://raw.githubusercontent.com/santoiio/invoice"
+                     f"-generator-app/main/images/{id.lower()}.jpg")
         thanks_image = "thanks.jpg"
 
         # Download image and handle errors
@@ -240,14 +239,14 @@ def pdf_gen():
         # Email the PDF with a proper filename
         attachment_path = str(final_attachment_path)
         message = f"""Please find attached the invoice #{invoice_nr}.
-        Let me know if you have any questions.
+Let me know if you have any questions.
 
-        Payment can be made via Zelle to 830-309-1564.
+Payment can be made via Zelle to 830-309-1564.
 
-        Thank you for your business!
+Thank you for your business!
 
-        Best regards,  
-        Maximiliano Santoyo
+Best regards,  
+Maximiliano Santoyo
         """
         subject = f"{phrase} Invoice #{invoice_nr} - Payment Details Attached"
         receivers = [info[4], st.secrets["u_name1"]]
@@ -255,3 +254,6 @@ def pdf_gen():
 
         # Clean up: Delete the temp file after sending the email
         Path(final_attachment_path).unlink()
+
+if __name__ == "__main__":
+    pdf_gen()
