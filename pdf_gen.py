@@ -30,7 +30,7 @@ def pdf_gen():
         date = time.strftime("%b %d, %Y")
 
         #Add header background according to business
-        image_path = base_dir / "images" / f"images/{id}.jpg"
+        image_path = base_dir / f"images/{id}.jpg"
         pdf.image(str(image_path),x=0, y=0, w=210)
 
         # Add invoice number headers
