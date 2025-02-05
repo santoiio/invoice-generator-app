@@ -6,8 +6,10 @@ import time
 from send_email import send_email
 import streamlit as st
 
+
 def pdf_gen():
     filepaths = glob.glob("invoices/invoice_data.csv")
+    base_dir = Path(__file__).parent
 
     for filepath in filepaths:
 
@@ -23,12 +25,13 @@ def pdf_gen():
             phrase = str(row["business"])
             id = ''.join(word[0].upper() for word in phrase.split())
             break
-        filename = f"{id}-10{time.strftime("%m%H")}"
+        filename = f"{id}-10{time.strftime('%m%H')}"
         invoice_nr = filename
         date = time.strftime("%b %d, %Y")
 
         #Add header background according to business
-        pdf.image(f"images/{id}.jpg",x=0, y=0, w=210)
+        image_path = base_dir / "images" / f"images/{id}.jpg"
+        pdf.image(str(image_path),x=0, y=0, w=210)
 
         # Add invoice number headers
         pdf.set_y(40)
