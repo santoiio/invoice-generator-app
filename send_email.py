@@ -1,15 +1,15 @@
 import smtplib, ssl
-import os
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
+import streamlit as st
 
 def send_email(subject, receivers, message, attachment_path):
     host = "smtp.gmail.com"
     port = 465
-    username = "brandon.proworks@gmail.com"
-    password = os.getenv("PASSWORD")
+    username = st.secrets["u_name"]
+    password = st.secrets["auth_token"]
     context = ssl.create_default_context()
 
     # Ensure the attachment file exists
