@@ -1,4 +1,5 @@
 import pandas as pd
+import tempfile
 import requests
 import glob
 from fpdf import FPDF
@@ -222,20 +223,35 @@ def pdf_gen():
             pdf.multi_cell(w=95, h=6, txt=r"*Contractor is not liable for "
                                     r"any injuries from handling equipment")
 
-        #Generate the PDF
-        pdf.output(f"PDFs/{filename}.pdf")
+        # Generate a temporary file
+        with tempfile.NamedTemporaryFile(delete=False,
+                                         suffix=".pdf") as temp_pdf:
+            temp_path = temp_pdf.name  # Store the temporary path
+            pdf.output(temp_path)  # Save the PDF file
 
-    attachment_path = f"PDFs/{filename}.pdf"
-    message = f"""Please find attached the invoice #{invoice_nr}.
-Let me know if you have any questions.
-    
-Payment can be made via Zelle to 830-309-1564.
-    
-Thank you for your business!
-    
-    Best regards,
-    Maximiliano Santoyo
-    """
-    subject = f"{phrase} Invoice #{invoice_nr} - Payment Details Attached"
-    receivers = [info[4], st.secrets["u_name1"]]
-    send_email(subject, receivers, message, attachment_path)
+        # Define a user-friendly filename
+        custom_filename = f"{filename}.pdf"
+        final_attachment_path = Path(
+            temp_path).parent / custom_filename  # Store in the same directory
+
+        # Rename the temp file to a meaningful name
+        Path(temp_path).rename(final_attachment_path)
+
+        # Email the PDF with a proper filename
+        attachment_path = str(final_attachment_path)
+        message = f"""Please find attached the invoice #{invoice_nr}.
+        Let me know if you have any questions.
+
+        Payment can be made via Zelle to 830-309-1564.
+
+        Thank you for your business!
+
+        Best regards,  
+        Maximiliano Santoyo
+        """
+        subject = f"{phrase} Invoice #{invoice_nr} - Payment Details Attached"
+        receivers = [info[4], st.secrets["u_name1"]]
+        send_email(subject, receivers, message, attachment_path)
+
+        # Clean up: Delete the temp file after sending the email
+        Path(final_attachment_path).unlink()
