@@ -1,6 +1,6 @@
 import pandas as pd
-import glob
 import requests
+import glob
 from fpdf import FPDF
 from pathlib import Path
 import time
@@ -10,6 +10,7 @@ import streamlit as st
 
 def pdf_gen():
     filepaths = glob.glob("invoices/invoice_data.csv")
+    base_dir = Path(__file__).parent
 
     for filepath in filepaths:
 
@@ -30,10 +31,9 @@ def pdf_gen():
         date = time.strftime("%b %d, %Y")
 
         #Add header background according to business
-        image_url = f"https://raw.githubusercontent.com/santoiio/invoice-generator-app/main/images/{id}.jpg"
+        image_url = (
+            f"https://raw.githubusercontent.com/santoiio/invoice-generator-app/main/images/{id}.jpg")
         header_image = "header.jpg"
-
-        # Download image and handle errors
         response = requests.get(image_url)
 
         if response.status_code == 200:
